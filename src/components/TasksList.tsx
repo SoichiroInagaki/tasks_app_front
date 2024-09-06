@@ -1,13 +1,15 @@
 import { Box, Checkbox, Grid2, Paper, styled } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
+import dayjs from "dayjs";
+import { NewTask } from "./NewTask";
 
 type TaskType = {
   id: number;
   title: string;
   description: string;
   completed: boolean;
-  deadline: Date;
+  deadline: string
 };
 
 const TaskItem = styled(Paper)(({theme}) => ({
@@ -21,18 +23,28 @@ const TaskItem = styled(Paper)(({theme}) => ({
   ...theme.applyStyles("dark", {backgroundColor: "#1A2027"})
 }));
 
-export const ApiFetch = () => {
-  //useQueryから返されるオブジェクトのdataプロパティを分割代入
-  const {data} = useQuery({
+export const TasksList = () => {
+  const getTasksUrl = "http://localhost:8080/tasks";
+
+  const {isPending, isError, data, error} = useQuery({
     queryKey: ["tasks"], 
     //axiosを用いてgetリクエストからpromiseを作成
-    queryFn: () => axios.get("http://localhost:8080/tasks").then(res => res.data)
+    queryFn: () => axios.get(getTasksUrl).then(res => res.data)
   });
+
+  if(isPending) return <Box>Loading......</Box>
+  if(isError) return <Box>Error: {error.message}</Box>
 
   return (
     <Box sx={{width: "100%"}}>
       <Grid2 container spacing={2} direction={"column"} alignItems={"center"}>
+
         {data?.map((task: TaskType) => {
+          const deadline = 
+            task.deadline 
+            ? dayjs(task.deadline).format("YYYY年M月D日H時m分")
+            : "指定なし";
+
           return (
             <TaskItem key={task.id}>
               <Box>
@@ -41,30 +53,14 @@ export const ApiFetch = () => {
               <Box>
                 <p>説明：{task.description ? task.description : "特筆事項なし"}</p>
                 <p>処置：<Checkbox defaultChecked={task.completed} /></p>
-                <p>期日：{task.deadline ? task.deadline.getTime().toFixed() : "指定なし"}</p>
+                <p>期日：{deadline}</p>
               </Box>
             </TaskItem>
           )
         })}
+        
       </Grid2>
+      <NewTask />
     </Box>
-
-    // <>
-    //   <ul>
-    //     {data?.map((task: TaskType) => {
-    //       return (
-    //         <div key={task.id}>
-    //           <li>{task.id}</li>
-    //           <ul>
-    //             <li>{task.title}</li>
-    //             <li>{task.description}</li>
-    //             <li>{task.completed}</li>
-    //             <li>{task.deadline?.getTime().toFixed()}</li>
-    //           </ul>
-    //         </div>
-    //       );
-    //     })}
-    //   </ul>
-    // </>
-  )
+  );
 }
