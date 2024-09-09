@@ -4,12 +4,13 @@ import AddIcon from "@mui/icons-material/Add"
 import { ChangeEvent, FormEvent, useState } from "react"
 import axios from "axios";
 import { DateTimePicker } from "@mui/x-date-pickers"
-import { DemoContainer } from "@mui/x-date-pickers/internals/demo"
 import "dayjs/locale/ja";
 import utc from "dayjs/plugin/utc"
 import timezone from "dayjs/plugin/timezone"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import queryKey from "../utils/queryKey";
+import { queryKey, requestUrl } from "../config/requestConfig";
+
+
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -23,8 +24,6 @@ export const NewTask = () => {
   const [deadline, setDeadline] = useState<Dayjs | null>(dateTomorrow); 
 
   const queryClient = useQueryClient();
-
-  const requestUrl = "http://localhost:8080/tasks"
   const requestData = {
     title: title,
     description: description,
@@ -68,6 +67,12 @@ export const NewTask = () => {
 
   function handleChangeDeadline(value: Dayjs | null){
     setDeadline(value);
+  }
+
+  if(mutation.isPending){
+    return <>Adding todo...</>
+  }else if(mutation.isError){
+    return <>An error occuerd: {mutation.error.message}</>
   }
 
   return (
@@ -119,15 +124,16 @@ export const NewTask = () => {
             value={description}
             onChange={handleChangeDescription}
           />
-          <DemoContainer components={["DateTimePicker"]}>
+          <Box>
+            期日*
             <DateTimePicker 
               format="YYYY年M月D日 H時m分" 
               slotProps={{calendarHeader: {format: "YYYY年M月"}}}
               ampm={false}
               value={deadline}
               onChange={handleChangeDeadline}
-              />
-          </DemoContainer>
+            />
+          </Box>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClickClose}>キャンセル</Button>
