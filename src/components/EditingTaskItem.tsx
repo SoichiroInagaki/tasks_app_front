@@ -31,9 +31,7 @@ const EditingTaskItem = ({task, onEditEnd}: {
       () => axios.put(putRequestUrl, requestData)
         .then(res => console.log(res))
         .catch(err => console.log(err)),
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: queryKey.taskList()})
-    }
+    onSuccess: () => queryClient.invalidateQueries({queryKey: queryKey.taskList()})
   });
 
   function handleChangeTitle(e: ChangeEvent<HTMLInputElement>) {
