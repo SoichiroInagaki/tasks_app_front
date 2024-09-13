@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Paper, TextField } from "@mui/material"
+import { Box, Button, Card, CardActions, CardContent, Checkbox, Grid2, IconButton, TextField } from "@mui/material"
 import DeleteIcon from '@mui/icons-material/Delete';
 import TaskType from "../types/TaskType"
 import { ChangeEvent, FormEvent, useState } from "react";
@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { queryKey, requestUrl } from "../config/requestConfig";
 import DeleteDialog from "./DeleteDialog";
+import { lightBlue } from "@mui/material/colors";
 
 const EditingTaskItem = ({task, onEditEnd}: {
   task: TaskType; 
@@ -72,73 +73,64 @@ const EditingTaskItem = ({task, onEditEnd}: {
 
   return (
     <Box>
-      <Paper
-        sx={{  
-          width: 600,
-          height: 300,
-          textAlign: "center",
-        }}
+      <Card 
+        sx={{ textAlign: "center", width: 500, border: 2, borderColor: lightBlue["400"]}}
         component={"form"}
         onSubmit={handleSubmit}
       >
-        <Box>
-          タスク名：
-          <TextField
-            required
-            margin="dense"
-            id="title"
-            name="title"
-            type="text"
-            variant="standard"
-            value={title}
-            onChange={handleChangeTitle}
-          />
-        </Box>
-        <Box>
-          説明：
-          <TextField
-            margin="dense"
-            id="description"
-            name="description"
-            type="text"
-            multiline
-            maxRows={4}
-            variant="standard"
-            value={description ? description : ""}
-            onChange={handleChangeDescription}
-          />
-        </Box>
-        <Box>
-          完了状態：
+        <CardContent>
+          <Grid2 container direction={"column"} spacing={2}>
+            <Grid2>
+              <TextField
+                autoFocus
+                required
+                label="タスク名"
+                fullWidth
+                multiline
+                type="text"
+                variant="standard"
+                value={title}
+                onChange={handleChangeTitle}
+              />
+            </Grid2>
+            <Grid2>
+              <TextField
+                type="text"
+                label="説明"
+                fullWidth
+                multiline
+                variant="standard"
+                value={description ? description : ""}
+                onChange={handleChangeDescription}
+              />
+            </Grid2>
+            <Grid2>
+              <DateTimePicker 
+                format="YYYY年MM月DD日HH時mm分" 
+                slotProps={{
+                  calendarHeader: {format: "YYYY年M月"}, 
+                  textField: {required: true}
+                }}
+                ampm={false}
+                label={"期限"}
+                value={deadline}
+                onChange={handleChangeDeadline}
+              />
+            </Grid2>
+          </Grid2>
+        </CardContent>
+        <CardActions sx={{justifyContent: "space-between"}}>
           <Checkbox 
-            checked={completed}
-            id="completed"
-            name="completed"
+            checked={completed} 
             onChange={handleChangeCompleted}
           />
-        </Box>
-        <Box>
-          期限：
-          <DateTimePicker 
-            format="YYYY年M月D日 H時m分" 
-            slotProps={{calendarHeader: {format: "YYYY年M月"}}}
-            ampm={false}
-            value={deadline}
-            onChange={handleChangeDeadline}
-          />
-        </Box>
-        <Box>
           <Button onClick={handleClickClose} variant="outlined">キャンセル</Button>
           <Button type="submit" variant="outlined">更新する</Button>
-        </Box>
-        <Button 
-          variant="outlined" 
-          onClick={e => handleClickDelete(e)} 
-          startIcon={<DeleteIcon/>}
-        >
-          消去
-        </Button>
-      </Paper>
+          <IconButton onClick={e => handleClickDelete(e)}>
+            <DeleteIcon />
+          </IconButton> 
+        </CardActions>
+      </Card>
       <DeleteDialog open={open} onClose={() => setOpen(false)} taskId={task.id}/>
     </Box>
   )

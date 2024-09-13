@@ -20,6 +20,10 @@ export const TasksList = () => {
   if(isPending) return <Box>Loading......</Box>
   if(isError) return <Box>Error: {error.message}</Box>
 
+  function handleClickTaskItem(taskId: number){
+    setActiveId(taskId);
+  }
+
   return (
     <Box>
       <Grid2 container spacing={2} direction={"column"} alignItems={"center"}>
@@ -27,7 +31,7 @@ export const TasksList = () => {
           if(activeId === task.id){
             return (
               <EditingTaskItem
-                key={task.id}
+                key={`editing${task.id}`}
                 task={task}
                 onEditEnd={() => setActiveId(-1)}
               />
@@ -37,7 +41,7 @@ export const TasksList = () => {
             <TaskItem  
               key={task.id}
               task={task}
-              onClick={() => setActiveId(task.id)}
+              onClick={() => handleClickTaskItem(task.id) }
             />
           );
         })}

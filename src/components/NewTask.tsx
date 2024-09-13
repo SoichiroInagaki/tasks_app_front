@@ -1,5 +1,5 @@
 import dayjs, { Dayjs } from "dayjs";
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Fab, TextField } from "@mui/material"
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Fab, Grid2, TextField} from "@mui/material"
 import AddIcon from "@mui/icons-material/Add"
 import { ChangeEvent, FormEvent, useState } from "react"
 import axios from "axios";
@@ -76,15 +76,12 @@ export const NewTask = () => {
   }
 
   return (
-    <>
-      {/**新規タスク追加フォームを広げるボタン */}
+    <Box>
       <Box sx={{position:"fixed", bottom:16, left:16}}>
         <Fab aria-label="add" color="primary" onClick={handleClickOpen}>
           <AddIcon />
         </Fab>
       </Box>
-
-      {/**新規タスク追加フォーム */}
       <Dialog
         open={open}
         onClose={handleClickClose}
@@ -98,48 +95,50 @@ export const NewTask = () => {
           <DialogContentText>
             新規タスクを追加するために、以下のフォームを埋めて「追加する」ボタンを押してください(「説明」は任意入力)。
           </DialogContentText>
-          <TextField
-            autoFocus
-            required
-            margin="dense"
-            id="title"
-            name="title"
-            label="新規タスク名"
-            type="text"
-            fullWidth
-            variant="standard"
-            value={title}
-            onChange={handleChangeTitle}
-          />
-          <TextField
-            margin="dense"
-            id="description"
-            name="description"
-            label="説明"
-            type="text"
-            fullWidth
-            multiline
-            maxRows={4}
-            variant="standard"
-            value={description}
-            onChange={handleChangeDescription}
-          />
-          <Box>
-            期日*
-            <DateTimePicker 
-              format="YYYY年M月D日 H時m分" 
-              slotProps={{calendarHeader: {format: "YYYY年M月"}}}
-              ampm={false}
-              value={deadline}
-              onChange={handleChangeDeadline}
-            />
-          </Box>
+          <Grid2 container direction={"column"} spacing={2}>
+            <Grid2>
+              <TextField
+                autoFocus
+                required
+                label="新規タスク名"
+                type="text"
+                fullWidth
+                variant="standard"
+                value={title}
+                onChange={handleChangeTitle}
+              />
+            </Grid2>
+            <Grid2>
+              <TextField
+                label="説明"
+                type="text"
+                fullWidth
+                multiline
+                variant="standard"
+                value={description}
+                onChange={handleChangeDescription}
+              />
+            </Grid2>
+            <Grid2>
+              <DateTimePicker 
+                format="YYYY年M月D日 H時m分" 
+                slotProps={{
+                  calendarHeader: {format: "YYYY年M月"}, 
+                  textField: {required: true}
+                }}
+                ampm={false}
+                label={"期限"}
+                value={deadline}
+                onChange={handleChangeDeadline}
+              />
+            </Grid2>
+          </Grid2>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClickClose}>キャンセル</Button>
           <Button type="submit">追加する</Button>
         </DialogActions>
       </Dialog>
-    </>
+    </Box>
   )
 }

@@ -1,4 +1,5 @@
-import { Box, Button, Checkbox, Paper } from "@mui/material"
+import { Box, Card, CardActionArea, CardActions, CardContent, Checkbox,  Grid2,  IconButton, Typography} from "@mui/material"
+import AlarmIcon from '@mui/icons-material/Alarm';
 import DeleteIcon from '@mui/icons-material/Delete';
 import TaskType from "../types/TaskType"
 import dayjs from "dayjs";
@@ -7,8 +8,12 @@ import { queryKey, requestUrl } from "../config/requestConfig";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import DeleteDialog from "./DeleteDialog";
+import { lightGreen, red } from "@mui/material/colors";
 
-const TaskItem = ({task, onClick}: {task: TaskType, onClick: () => void}) => {
+const TaskItem = ({task, onClick}: {
+  task: TaskType, 
+  onClick: (e: React.MouseEvent) => void
+}) => {
 
   const [completed, setCompleted] = useState(task.completed);
   const [open, setOpen] = useState(false);
@@ -24,55 +29,73 @@ const TaskItem = ({task, onClick}: {task: TaskType, onClick: () => void}) => {
   const mutation = useMutation({
     mutationFn: 
       () => axios.put(putRequestUrl, requestData)
-      .then(req => console.log(req))
+      .then(res => console.log(res))
       .catch(err => console.log(err)),
     onSuccess: () => queryClient.invalidateQueries({queryKey: queryKey.taskList()})
   });
 
-  function handleChangeCompleted (e: React.ChangeEvent<HTMLInputElement>) {
-    e.stopPropagation();
+  function handleChangeCompleted () {
     mutation.mutate();
     setCompleted(!completed);
   }
 
-  function handleClickDelete (e: React.MouseEvent<HTMLButtonElement>) {
-    e.stopPropagation();
-    setOpen(true);
-  }
-
   return (
     <Box>
-      <Paper
-        sx={{  
-          width: 400,
-          height: 250,
-          textAlign: "center",
+      <Card 
+        sx={{
+          textAlign: "center", 
+          width: 345, 
+          border: 2,  
+          ...(completed ? {borderColor: lightGreen["800"]} : {borderColor: red["A400"]})
         }}
-        onClick={onClick}
       >
-        <Box>タスク名：{task.title}</Box>
-        <Box>
-          <p>説明：{task.description ? task.description : "特筆事項なし"}</p>
-          <p>
-            完了状態：
-            <Checkbox 
-              checked={completed}
-              onChange={handleChangeCompleted}
-              onClick={e => e.stopPropagation()}
-            />
-          </p>
-          <p>期日：{dayjs(task.deadline).format("YYYY年M月D日H時m分")}</p>
-        </Box>
-        <Button 
-          variant="outlined"
-          onClick={e => handleClickDelete(e)}
-          startIcon={<DeleteIcon />}
-        >
-          消去
-        </Button>
-      </Paper>
-
-      {/**削除ボタン押下時に開くダイアログ */}
+        <CardActionArea onClick={onClick}>
+          <CardContent>
+            <Grid2 container spacing={2} direction={"column"}>
+              <Grid2>
+                <Typography variant="h5">
+                  <Box fontWeight={"bold"}>
+                    {task.title}
+                  </Box>
+                </Typography>
+              </Grid2>
+              <Grid2>
+                {task.description 
+                  ? <Typography variant="body1">
+                      {task.description}
+                    </Typography>
+                  : <Typography variant="body1" sx={{color: "GrayText"}}>
+                      説明なし
+                    </Typography>
+                }
+              </Grid2>
+              <Grid2>
+                <Grid2 container direction={"row"} justifyContent={"center"}>
+                  <Grid2>
+                    <AlarmIcon />
+                  </Grid2>
+                  <Grid2>
+                    <Typography variant="body1">
+                      {dayjs(task.deadline).format("YYYY年MM月DD日 HH時mm分")}
+                    </Typography>
+                  </Grid2>
+                </Grid2>
+              </Grid2>
+            </Grid2>
+          </CardContent>
+        </CardActionArea>
+        <CardActions sx={{justifyContent: "space-between"}}>
+          <Checkbox 
+            checked={completed}
+            onChange={handleChangeCompleted} 
+            color="success"
+            sx={{color: red["A400"]}} 
+          />
+          <IconButton aria-label="delete" onClick={() => setOpen(true)}>
+            <DeleteIcon />
+          </IconButton>
+        </CardActions>
+      </Card>
       <DeleteDialog open={open} onClose={() => setOpen(false)} taskId={task.id}/>
     </Box>
   )
