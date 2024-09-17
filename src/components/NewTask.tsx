@@ -8,7 +8,7 @@ import "dayjs/locale/ja";
 import utc from "dayjs/plugin/utc"
 import timezone from "dayjs/plugin/timezone"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { queryKey, requestUrl } from "../config/requestConfig";
+import { requestUrl, tasksListQueryKey } from "../config/requestConfig";
 
 
 
@@ -34,7 +34,7 @@ export const NewTask = () => {
   const mutation = useMutation({
     mutationFn: () => axios.post(requestUrl, requestData).then(res => console.log(res)),
     onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: queryKey.taskList()})
+      queryClient.invalidateQueries({queryKey: tasksListQueryKey})
       setTitle("");
       setDescription("");
       setDeadline(dateTomorrow);

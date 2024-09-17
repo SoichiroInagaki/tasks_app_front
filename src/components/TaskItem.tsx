@@ -4,7 +4,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import TaskType from "../types/TaskType"
 import dayjs from "dayjs";
 import { useState } from "react";
-import { queryKey, requestUrl } from "../config/requestConfig";
+import { requestUrl, tasksListQueryKey } from "../config/requestConfig";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import DeleteDialog from "./DeleteDialog";
@@ -31,7 +31,7 @@ const TaskItem = ({task, onClick}: {
       () => axios.put(putRequestUrl, requestData)
       .then(res => console.log(res))
       .catch(err => console.log(err)),
-    onSuccess: () => queryClient.invalidateQueries({queryKey: queryKey.taskList()})
+    onSuccess: () => queryClient.invalidateQueries({queryKey: tasksListQueryKey})
   });
 
   function handleChangeCompleted () {

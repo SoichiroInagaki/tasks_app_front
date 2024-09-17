@@ -6,13 +6,13 @@ import TaskItem from "./TaskItem";
 import TaskType from "../types/TaskType";
 import { useState } from "react";
 import EditingTaskItem from "./EditingTaskItem";
-import { queryKey, requestUrl } from "../config/requestConfig";
+import { requestUrl, tasksListQueryKey } from "../config/requestConfig";
 
 export const TasksList = () => {
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
 
   const {isPending, isError, data, error} = useQuery({
-    queryKey: queryKey.taskList(), 
+    queryKey: tasksListQueryKey, 
     //axiosを用いてgetリクエストからpromiseを作成
     queryFn: () => axios.get(requestUrl).then(res => res.data)
   });
