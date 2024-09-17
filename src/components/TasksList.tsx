@@ -9,7 +9,7 @@ import EditingTaskItem from "./EditingTaskItem";
 import { queryKey, requestUrl } from "../config/requestConfig";
 
 export const TasksList = () => {
-  const [activeId, setActiveId] = useState(-1);
+  const [activeId, setActiveId] = useState<number | undefined>(undefined);
 
   const {isPending, isError, data, error} = useQuery({
     queryKey: queryKey.taskList(), 
@@ -33,7 +33,7 @@ export const TasksList = () => {
               <EditingTaskItem
                 key={`editing${task.id}`}
                 task={task}
-                onEditEnd={() => setActiveId(-1)}
+                onEditEnd={() => setActiveId(undefined)}
               />
             )
           }
