@@ -6,7 +6,7 @@ import dayjs, { Dayjs } from "dayjs";
 import { DateTimePicker } from "@mui/x-date-pickers";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { queryKey, requestUrl } from "../config/requestConfig";
+import { requestUrl, tasksListQueryKey } from "../config/requestConfig";
 import DeleteDialog from "./DeleteDialog";
 import { lightBlue } from "@mui/material/colors";
 
@@ -35,7 +35,7 @@ const EditingTaskItem = ({task, onEditEnd}: {
       () => axios.put(putRequestUrl, requestData)
         .then(res => console.log(res))
         .catch(err => console.log(err)),
-    onSuccess: () => queryClient.invalidateQueries({queryKey: queryKey.taskList()})
+    onSuccess: () => queryClient.invalidateQueries({queryKey: tasksListQueryKey})
   });
 
   function handleChangeTitle(e: ChangeEvent<HTMLInputElement>) {

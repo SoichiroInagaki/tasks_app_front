@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { queryKey, requestUrl } from "../config/requestConfig";
+import { requestUrl, tasksListQueryKey } from "../config/requestConfig";
 
 const DeleteDialog = ({open, onClose, taskId}: {
   open: boolean, 
@@ -18,7 +18,7 @@ const DeleteDialog = ({open, onClose, taskId}: {
       .then(res => console.log(res))
       .catch(err => console.log(err)),
     onSuccess:
-      () => queryClient.invalidateQueries({queryKey: queryKey.taskList()})
+      () => queryClient.invalidateQueries({queryKey: tasksListQueryKey})
   })
 
   function handleClickDelete(){
