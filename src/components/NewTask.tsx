@@ -3,7 +3,7 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, D
 import AddIcon from "@mui/icons-material/Add"
 import { ChangeEvent, FormEvent, useState } from "react"
 import axios from "axios";
-import { DateTimePicker } from "@mui/x-date-pickers"
+import { MobileDateTimePicker } from "@mui/x-date-pickers"
 import "dayjs/locale/ja";
 import utc from "dayjs/plugin/utc"
 import timezone from "dayjs/plugin/timezone"
@@ -120,13 +120,14 @@ export const NewTask = () => {
               />
             </Grid2>
             <Grid2>
-              <DateTimePicker 
+              <MobileDateTimePicker 
                 format="YYYY年M月D日 H時m分" 
                 slotProps={{
                   calendarHeader: {format: "YYYY年M月"}, 
                   textField: {required: true}
                 }}
                 ampm={false}
+                minutesStep={5}
                 label={"期限"}
                 value={deadline}
                 onChange={handleChangeDeadline}
