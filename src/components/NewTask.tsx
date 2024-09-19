@@ -1,58 +1,40 @@
 import dayjs, { Dayjs } from "dayjs";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Fab, Grid2, TextField} from "@mui/material"
 import AddIcon from "@mui/icons-material/Add"
-import { ChangeEvent, FormEvent, useState } from "react"
-import axios from "axios";
 import { MobileDateTimePicker } from "@mui/x-date-pickers"
 import "dayjs/locale/ja";
 import utc from "dayjs/plugin/utc"
 import timezone from "dayjs/plugin/timezone"
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { requestUrl, tasksListQueryKey } from "../config/requestConfig";
-
-
+import useCreateTask from "../hooks/useCreateTask";
+import { ChangeEvent, FormEvent, useState } from "react";
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.locale("ja");
 
 export const NewTask = () => {
-  const [open, setOpen] = useState(false);
+  const mutation = useCreateTask();
+
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const dateTomorrow = dayjs().add(1, "day").startOf("day");
-  const [deadline, setDeadline] = useState<Dayjs | null>(dateTomorrow); 
+  const [deadline, setDeadline] = useState(dateTomorrow); 
+  const [open, setOpen] = useState(false);
 
-  const queryClient = useQueryClient();
   const requestData = {
     title: title,
     description: description,
     completed: false,
-    deadline: deadline ? deadline.tz(dayjs.tz.guess()).format() : null
+    deadline: deadline.tz(dayjs.tz.guess()).format()
   };
-
-  const mutation = useMutation({
-    mutationFn: () => axios.post(requestUrl, requestData).then(res => console.log(res)),
-    onSuccess: () => {
-      queryClient.invalidateQueries({queryKey: tasksListQueryKey})
-      setTitle("");
-      setDescription("");
-      setDeadline(dateTomorrow);
-      setOpen(false);
-    }
-  });
-
-  function handleClickOpen() {
-    setOpen(true);
-  }
-
-  function handleClickClose() {
-    setOpen(false);
-  }
 
   function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    mutation.mutate();
+    mutation.mutate(requestData);
+    setTitle("");
+    setDescription("");
+    setDeadline(dateTomorrow);
+    setOpen(false);
   }
 
   function handleChangeTitle(e: ChangeEvent<HTMLInputElement>) {
@@ -66,25 +48,19 @@ export const NewTask = () => {
   }
 
   function handleChangeDeadline(value: Dayjs | null){
-    setDeadline(value);
-  }
-
-  if(mutation.isPending){
-    return <>Adding todo...</>
-  }else if(mutation.isError){
-    return <>An error occuerd: {mutation.error.message}</>
+    if(value)setDeadline(value);
   }
 
   return (
     <Box>
       <Box sx={{position:"fixed", bottom:16, left:16}}>
-        <Fab aria-label="add" color="primary" onClick={handleClickOpen}>
+        <Fab aria-label="add" color="primary" onClick={() => setOpen(true)}>
           <AddIcon />
         </Fab>
       </Box>
       <Dialog
         open={open}
-        onClose={handleClickClose}
+        onClose={() => setOpen(false)}
         PaperProps={{
           component: "form",
           onSubmit: handleSubmit
@@ -136,7 +112,7 @@ export const NewTask = () => {
           </Grid2>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClickClose}>キャンセル</Button>
+          <Button onClick={() => setOpen(false)}>キャンセル</Button>
           <Button type="submit">追加する</Button>
         </DialogActions>
       </Dialog>

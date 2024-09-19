@@ -1,33 +1,22 @@
 import { Box, Grid2, } from "@mui/material";
-import { useQuery } from "@tanstack/react-query";
-import axios from "axios";
 import { NewTask } from "./NewTask";
 import TaskItem from "./TaskItem";
 import TaskType from "../types/TaskType";
-import { useState } from "react";
 import EditingTaskItem from "./EditingTaskItem";
-import { requestUrl, tasksListQueryKey } from "../config/requestConfig";
+import useTasksList from "../hooks/useTasksList";
+import { useState } from "react";
 
 export const TasksList = () => {
   const [activeId, setActiveId] = useState<number | undefined>(undefined);
+  const info = useTasksList();
 
-  const {isPending, isError, data, error} = useQuery({
-    queryKey: tasksListQueryKey, 
-    //axiosを用いてgetリクエストからpromiseを作成
-    queryFn: () => axios.get(requestUrl).then(res => res.data)
-  });
-
-  if(isPending) return <Box>Loading......</Box>
-  if(isError) return <Box>Error: {error.message}</Box>
-
-  function handleClickTaskItem(taskId: number){
-    setActiveId(taskId);
-  }
+  if(info.isPending) return <Box>Loading......</Box>
+  if(info.isError) return <Box>Error: {info.error?.message}</Box>
 
   return (
     <Box>
       <Grid2 container spacing={2} direction={"column"} alignItems={"center"}>
-        {data?.map((task: TaskType) => {
+        {info.data?.map((task: TaskType) => {
           if(activeId === task.id){
             return (
               <EditingTaskItem
@@ -41,7 +30,7 @@ export const TasksList = () => {
             <TaskItem  
               key={task.id}
               task={task}
-              onClick={() => handleClickTaskItem(task.id) }
+              onClick={() => setActiveId(task.id)}
             />
           );
         })}

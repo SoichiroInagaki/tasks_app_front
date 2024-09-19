@@ -1,7 +1,5 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
-import { requestUrl, tasksListQueryKey } from "../config/requestConfig";
+import useDeleteTask from "../hooks/useDeleteTask";
 
 const DeleteDialog = ({open, onClose, taskId}: {
   open: boolean, 
@@ -9,17 +7,7 @@ const DeleteDialog = ({open, onClose, taskId}: {
   taskId: number
 }) => {
 
-  const deleteRequestUrl = `${requestUrl}/${taskId}`;
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: 
-      () => axios.delete(deleteRequestUrl)
-      .then(res => console.log(res))
-      .catch(err => console.log(err)),
-    onSuccess:
-      () => queryClient.invalidateQueries({queryKey: tasksListQueryKey})
-  })
+  const mutation = useDeleteTask(taskId);
 
   function handleClickDelete(){
     mutation.mutate();

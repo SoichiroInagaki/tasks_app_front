@@ -4,39 +4,25 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import TaskType from "../types/TaskType"
 import dayjs from "dayjs";
 import { useState } from "react";
-import { requestUrl, tasksListQueryKey } from "../config/requestConfig";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import DeleteDialog from "./DeleteDialog";
 import { lightGreen, red } from "@mui/material/colors";
+import useUpdateTask from "../hooks/useUpdateTask";
 
 const TaskItem = ({task, onClick}: {
   task: TaskType, 
   onClick: (e: React.MouseEvent) => void
 }) => {
-
-  const [completed, setCompleted] = useState(task.completed);
   const [open, setOpen] = useState(false);
 
-  const putRequestUrl = `${requestUrl}/${task.id}`;
-  const requestData = {
-    ...task,
-    completed: completed,
-    deadline: dayjs(task.deadline).tz(dayjs.tz.guess()).format()
-  };
-  const queryClient = useQueryClient();
+  const mutation = useUpdateTask();
 
-  const mutation = useMutation({
-    mutationFn: 
-      () => axios.put(putRequestUrl, requestData)
-      .then(res => console.log(res))
-      .catch(err => console.log(err)),
-    onSuccess: () => queryClient.invalidateQueries({queryKey: tasksListQueryKey})
-  });
-
-  function handleChangeCompleted () {
-    mutation.mutate();
-    setCompleted(!completed);
+  function handleChangeCompleted (checked: boolean) {
+    const requestData = {
+      ...task,
+      completed: checked,
+      deadline: dayjs(task.deadline).tz(dayjs.tz.guess()).format()
+    }
+    mutation.mutate(requestData);
   }
 
   return (
@@ -46,7 +32,7 @@ const TaskItem = ({task, onClick}: {
           textAlign: "center", 
           width: 345, 
           border: 2,  
-          ...(completed ? {borderColor: lightGreen["800"]} : {borderColor: red["A400"]})
+          ...(task.completed ? {borderColor: lightGreen["800"]} : {borderColor: red["A400"]})
         }}
       >
         <CardActionArea onClick={onClick}>
@@ -86,8 +72,8 @@ const TaskItem = ({task, onClick}: {
         </CardActionArea>
         <CardActions sx={{justifyContent: "space-between"}}>
           <Checkbox 
-            checked={completed}
-            onChange={handleChangeCompleted} 
+            checked={task.completed}
+            onChange={(e) => handleChangeCompleted(e.target.checked)} 
             color="success"
             sx={{color: red["A400"]}} 
           />

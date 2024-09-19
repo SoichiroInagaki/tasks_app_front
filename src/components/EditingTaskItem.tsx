@@ -2,41 +2,40 @@ import { Box, Button, Card, CardActions, CardContent, Checkbox, Grid2, IconButto
 import DeleteIcon from '@mui/icons-material/Delete';
 import TaskType from "../types/TaskType"
 import { ChangeEvent, FormEvent, useState } from "react";
-import dayjs, { Dayjs } from "dayjs";
 import { DateTimePicker } from "@mui/x-date-pickers";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
-import { requestUrl, tasksListQueryKey } from "../config/requestConfig";
 import DeleteDialog from "./DeleteDialog";
 import { lightBlue } from "@mui/material/colors";
+import useUpdateTask from "../hooks/useUpdateTask";
+import dayjs from "dayjs";
 
 const EditingTaskItem = ({task, onEditEnd}: {
   task: TaskType; 
   onEditEnd: () => void;
 }) => {
-
   const [title, setTitle] = useState(task.title);
   const [description, setDescription] = useState(task.description);
   const [completed, setCompleted] = useState(task.completed);
-  const [deadline, setDeadline] = useState<Dayjs | null>(dayjs(task.deadline)); 
+  const [deadline, setDeadline] = useState(dayjs(task.deadline)); 
   const [open, setOpen] = useState(false);
 
-  const putRequestUrl = `${requestUrl}/${task.id}`; 
+  const mutation = useUpdateTask();
   const requestData = {
+    id: task.id,
     title: title,
     description: description,
     completed: completed,
-    deadline: deadline ? deadline.tz(dayjs.tz.guess()).format() : null
+    deadline: deadline.tz(dayjs.tz.guess()).format() 
   }
-  const queryClient = useQueryClient();
 
-  const mutation = useMutation({
-    mutationFn: 
-      () => axios.put(putRequestUrl, requestData)
-        .then(res => console.log(res))
-        .catch(err => console.log(err)),
-    onSuccess: () => queryClient.invalidateQueries({queryKey: tasksListQueryKey})
-  });
+  function handleSubmit(e: FormEvent<HTMLFormElement>){
+    e.preventDefault();
+    mutation.mutate(requestData);
+    onEditEnd();
+  }
+
+  function handleCancelSubmit(){
+    onEditEnd();
+  }  
 
   function handleChangeTitle(e: ChangeEvent<HTMLInputElement>) {
     e.preventDefault();
@@ -53,22 +52,7 @@ const EditingTaskItem = ({task, onEditEnd}: {
   }
 
   function handleChangeDeadline(value: dayjs.Dayjs | null){
-    setDeadline(value);
-  }
-
-  function handleSubmit(e: FormEvent<HTMLFormElement>){
-    e.preventDefault();
-    mutation.mutate();
-    onEditEnd();
-  }
-
-  function handleClickClose(){
-    onEditEnd();
-  }
-
-  function handleClickDelete (e: React.MouseEvent<HTMLButtonElement>) {
-    e.stopPropagation();
-    setOpen(true);
+    if(value)setDeadline(value);
   }
 
   return (
@@ -124,9 +108,9 @@ const EditingTaskItem = ({task, onEditEnd}: {
             checked={completed} 
             onChange={handleChangeCompleted}
           />
-          <Button onClick={handleClickClose} variant="outlined">キャンセル</Button>
+          <Button onClick={handleCancelSubmit} variant="outlined">キャンセル</Button>
           <Button type="submit" variant="outlined">更新する</Button>
-          <IconButton onClick={e => handleClickDelete(e)}>
+          <IconButton onClick={() => setOpen(true)}>
             <DeleteIcon />
           </IconButton> 
         </CardActions>
