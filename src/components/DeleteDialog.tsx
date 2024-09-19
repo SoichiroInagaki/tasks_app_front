@@ -1,7 +1,7 @@
 import { Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
-import useDeleteTask from "../hooks/useDeleteTask";
+import { useDeleteTask } from "../hooks/useDeleteTask";
 
-const DeleteDialog = ({open, onClose, taskId}: {
+export const DeleteDialog = ({open, onClose, taskId}: {
   open: boolean, 
   onClose: () => void, 
   taskId: number
@@ -27,4 +27,3 @@ const DeleteDialog = ({open, onClose, taskId}: {
     </Dialog>
   )
 }
-export default DeleteDialog;

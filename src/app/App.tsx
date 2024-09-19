@@ -4,8 +4,16 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools/production'
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import dayjs from 'dayjs';
+import utc from "dayjs/plugin/utc"
+import timezone from "dayjs/plugin/timezone"
+import "dayjs/locale/ja";
 
-export default function App() {
+dayjs.extend(utc);
+dayjs.extend(timezone);
+dayjs.locale("ja");
+
+export function App() {
   const queryClient = new QueryClient();
   
   return (

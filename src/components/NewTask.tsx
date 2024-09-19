@@ -2,15 +2,8 @@ import dayjs, { Dayjs } from "dayjs";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Fab, Grid2, TextField} from "@mui/material"
 import AddIcon from "@mui/icons-material/Add"
 import { MobileDateTimePicker } from "@mui/x-date-pickers"
-import "dayjs/locale/ja";
-import utc from "dayjs/plugin/utc"
-import timezone from "dayjs/plugin/timezone"
-import useCreateTask from "../hooks/useCreateTask";
+import { useCreateTask } from "../hooks/useCreateTask";
 import { ChangeEvent, FormEvent, useState } from "react";
-
-dayjs.extend(utc);
-dayjs.extend(timezone);
-dayjs.locale("ja");
 
 export const NewTask = () => {
   const mutation = useCreateTask();

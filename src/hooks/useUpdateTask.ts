@@ -1,9 +1,9 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { requestUrl, tasksListQueryKey } from "../config/requestConfig";
-import TaskType from "../types/TaskType";
+import { TaskType } from "../types/TaskType";
 
-export default function useUpdateTask () {
+export function useUpdateTask () {
   const queryClient = useQueryClient();
   const mutation = useMutation({
     mutationFn: async (task: TaskType) => {

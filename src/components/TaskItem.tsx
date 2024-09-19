@@ -1,14 +1,14 @@
 import { Box, Card, CardActionArea, CardActions, CardContent, Checkbox,  Grid2,  IconButton, Typography} from "@mui/material"
 import AlarmIcon from '@mui/icons-material/Alarm';
 import DeleteIcon from '@mui/icons-material/Delete';
-import TaskType from "../types/TaskType"
+import { TaskType } from "../types/TaskType"
 import dayjs from "dayjs";
 import { useState } from "react";
-import DeleteDialog from "./DeleteDialog";
+import { DeleteDialog } from "./DeleteDialog";
 import { lightGreen, red } from "@mui/material/colors";
-import useUpdateTask from "../hooks/useUpdateTask";
+import { useUpdateTask } from "../hooks/useUpdateTask";
 
-const TaskItem = ({task, onClick}: {
+export const TaskItem = ({task, onClick}: {
   task: TaskType, 
   onClick: (e: React.MouseEvent) => void
 }) => {
@@ -86,5 +86,3 @@ const TaskItem = ({task, onClick}: {
     </Box>
   )
 }
-
-export default TaskItem;

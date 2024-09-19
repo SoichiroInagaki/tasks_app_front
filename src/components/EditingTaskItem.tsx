@@ -1,14 +1,14 @@
 import { Box, Button, Card, CardActions, CardContent, Checkbox, Grid2, IconButton, TextField } from "@mui/material"
 import DeleteIcon from '@mui/icons-material/Delete';
-import TaskType from "../types/TaskType"
 import { ChangeEvent, FormEvent, useState } from "react";
 import { DateTimePicker } from "@mui/x-date-pickers";
-import DeleteDialog from "./DeleteDialog";
 import { lightBlue } from "@mui/material/colors";
-import useUpdateTask from "../hooks/useUpdateTask";
 import dayjs from "dayjs";
+import { useUpdateTask } from "../hooks/useUpdateTask";
+import { DeleteDialog } from "./DeleteDialog";
+import { TaskType } from "../types/TaskType";
 
-const EditingTaskItem = ({task, onEditEnd}: {
+export const EditingTaskItem = ({task, onEditEnd}: {
   task: TaskType; 
   onEditEnd: () => void;
 }) => {
@@ -119,4 +119,3 @@ const EditingTaskItem = ({task, onEditEnd}: {
     </Box>
   )
 }
-export default EditingTaskItem;

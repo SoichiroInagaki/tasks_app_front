@@ -1,9 +1,8 @@
-import { Box, Grid2, } from "@mui/material";
-import { NewTask } from "./NewTask";
-import TaskItem from "./TaskItem";
-import TaskType from "../types/TaskType";
-import EditingTaskItem from "./EditingTaskItem";
-import useTasksList from "../hooks/useTasksList";
+import { Box, Stack, } from "@mui/material";
+import { TaskItem } from "./TaskItem";
+import { TaskType } from "../types/TaskType";
+import { EditingTaskItem } from "./EditingTaskItem";
+import { useTasksList } from "../hooks/useTasksList";
 import { useState } from "react";
 
 export const TasksList = () => {
@@ -14,28 +13,25 @@ export const TasksList = () => {
   if(info.isError) return <Box>Error: {info.error?.message}</Box>
 
   return (
-    <Box>
-      <Grid2 container spacing={2} direction={"column"} alignItems={"center"}>
-        {info.data?.map((task: TaskType) => {
-          if(activeId === task.id){
-            return (
-              <EditingTaskItem
-                key={`editing${task.id}`}
-                task={task}
-                onEditEnd={() => setActiveId(undefined)}
-              />
-            )
-          }
+    <Stack spacing={2} direction={"column"} alignItems={"center"}>
+      {info.data?.map((task: TaskType) => {
+        if(activeId === task.id){
           return (
-            <TaskItem  
-              key={task.id}
+            <EditingTaskItem
+              key={`editing${task.id}`}
               task={task}
-              onClick={() => setActiveId(task.id)}
+              onEditEnd={() => setActiveId(undefined)}
             />
-          );
-        })}
-      </Grid2>
-      <NewTask />
-    </Box>
+          )
+        }
+        return (
+          <TaskItem  
+            key={task.id}
+            task={task}
+            onClick={() => setActiveId(task.id)}
+          />
+        );
+      })}
+    </Stack>
   );
 }

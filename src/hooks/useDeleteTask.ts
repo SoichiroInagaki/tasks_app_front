@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { requestUrl, tasksListQueryKey } from "../config/requestConfig";
 import axios from "axios";
 
-export default function useDeleteTask (taskId: number) {
+export function useDeleteTask (taskId: number) {
   const deleteRequestUrl = `${requestUrl}/${taskId}`;
   const queryClient = useQueryClient();
 
