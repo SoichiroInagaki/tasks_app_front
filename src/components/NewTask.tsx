@@ -1,48 +1,39 @@
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Fab, Grid2, TextField} from "@mui/material"
 import AddIcon from "@mui/icons-material/Add"
 import { MobileDateTimePicker } from "@mui/x-date-pickers"
 import { useCreateTask } from "../hooks/useCreateTask";
-import { ChangeEvent, FormEvent, useState } from "react";
+import { useState } from "react";
+import { Controller, SubmitHandler, useForm } from "react-hook-form";
 
 export const NewTask = () => {
-  const mutation = useCreateTask();
-
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const dateTomorrow = dayjs().add(1, "day").startOf("day");
-  const [deadline, setDeadline] = useState(dateTomorrow); 
   const [open, setOpen] = useState(false);
+  const mutation = useCreateTask();
+  const {handleSubmit, control, reset} = useForm({
+    defaultValues: {
+      title: "",
+      description: "",
+      deadline: dayjs().add(1, "day").startOf("day")
+    }
+  });
 
-  const requestData = {
-    title: title,
-    description: description,
-    completed: false,
-    deadline: deadline.tz(dayjs.tz.guess()).format()
+  type FormType = {
+    title: string;
+    description: string;
+    deadline: dayjs.Dayjs
   };
 
-  function handleSubmit(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  const onSubmit: SubmitHandler<FormType> = (data, event) => {
+    const requestData = {
+      ...data,
+      completed: false,
+      deadline: data.deadline.tz(dayjs.tz.guess()).format()
+    };
+    event?.preventDefault();
     mutation.mutate(requestData);
-    setTitle("");
-    setDescription("");
-    setDeadline(dateTomorrow);
+    reset();
     setOpen(false);
-  }
-
-  function handleChangeTitle(e: ChangeEvent<HTMLInputElement>) {
-    e.preventDefault();
-    setTitle(e.target.value);
-  }
-
-  function handleChangeDescription(e: ChangeEvent<HTMLInputElement>) {
-    e.preventDefault();
-    setDescription(e.target.value);
-  }
-
-  function handleChangeDeadline(value: Dayjs | null){
-    if(value)setDeadline(value);
-  }
+  }; 
 
   return (
     <Box>
@@ -56,7 +47,7 @@ export const NewTask = () => {
         onClose={() => setOpen(false)}
         PaperProps={{
           component: "form",
-          onSubmit: handleSubmit
+          onSubmit: handleSubmit(onSubmit)
         }}
       >
         <DialogTitle>新規タスクを追加する</DialogTitle>
@@ -66,40 +57,56 @@ export const NewTask = () => {
           </DialogContentText>
           <Grid2 container direction={"column"} spacing={2}>
             <Grid2>
-              <TextField
-                autoFocus
-                required
-                label="新規タスク名"
-                type="text"
-                fullWidth
-                variant="standard"
-                value={title}
-                onChange={handleChangeTitle}
+              <Controller
+                name="title"
+                control={control}
+                rules={{required: true}}
+                render={({field}) => (
+                  <TextField
+                    {...field}
+                    autoFocus
+                    label="新規タスク名"
+                    type="text"
+                    fullWidth
+                    multiline
+                    variant="standard"
+                  />
+                )}
               />
             </Grid2>
             <Grid2>
-              <TextField
-                label="説明"
-                type="text"
-                fullWidth
-                multiline
-                variant="standard"
-                value={description}
-                onChange={handleChangeDescription}
+              <Controller
+                name="description"
+                control={control}
+                render={({field}) => (
+                  <TextField
+                    {...field}
+                    label="説明"
+                    type="text"
+                    fullWidth
+                    multiline
+                    variant="standard"
+                  />
+                )}
               />
             </Grid2>
             <Grid2>
-              <MobileDateTimePicker 
-                format="YYYY年M月D日 H時m分" 
-                slotProps={{
-                  calendarHeader: {format: "YYYY年M月"}, 
-                  textField: {required: true}
-                }}
-                ampm={false}
-                minutesStep={5}
-                label={"期限"}
-                value={deadline}
-                onChange={handleChangeDeadline}
+              <Controller
+                name="deadline"
+                control={control}
+                rules={{required: true}}
+                render={({field}) => (
+                  <MobileDateTimePicker 
+                    {...field}
+                    format="YYYY年M月D日 H時m分" 
+                    slotProps={{
+                      calendarHeader: {format: "YYYY年M月"}, 
+                    }}
+                    ampm={false}
+                    minutesStep={5}
+                    label={"期限"}
+                  />
+                )}
               />
             </Grid2>
           </Grid2>
