@@ -1,13 +1,14 @@
-import { Box, Button, Card, CardActions, CardContent, Checkbox, Grid2, IconButton, TextField } from "@mui/material"
+import { Box, Button, Card, CardActions, CardContent, Checkbox, IconButton } from "@mui/material"
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useState } from "react";
-import { DateTimePicker } from "@mui/x-date-pickers";
 import { lightBlue } from "@mui/material/colors";
 import dayjs from "dayjs";
 import { useUpdateTask } from "../hooks/useUpdateTask";
 import { DeleteDialog } from "./DeleteDialog";
 import { TaskType } from "../types/TaskType";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { FormControllers } from "./FormControllers";
+import { FormType } from "../types/FormType";
 
 export const EditingTaskItem = ({task, onEditEnd}: {
   task: TaskType; 
@@ -15,8 +16,7 @@ export const EditingTaskItem = ({task, onEditEnd}: {
 }) => {
   const [open, setOpen] = useState(false);
   const mutation = useUpdateTask();
-
-  const {handleSubmit, control} = useForm({
+  const {handleSubmit, control, formState: {errors}} = useForm<FormType>({
     defaultValues: {
       title: task.title,
       description: task.description,
@@ -25,66 +25,17 @@ export const EditingTaskItem = ({task, onEditEnd}: {
     }
   });
 
-  type FormType = {
-    title: string;
-    description: string;
-    completed: boolean;
-    deadline: dayjs.Dayjs;
-  }
-
   const onSubmit: SubmitHandler<FormType> = (data, event) => {
     const requestData = {
       ...data,
       id: task.id,
+      completed: data.completed ?? false,
       deadline: dayjs(data.deadline).tz(dayjs.tz.guess()).format()
     };
     event?.preventDefault();
     mutation.mutate(requestData);
     onEditEnd();
   }
-
-
-
-  // const [title, setTitle] = useState(task.title);
-  // const [description, setDescription] = useState(task.description);
-  // const [completed, setCompleted] = useState(task.completed);
-  // const [deadline, setDeadline] = useState(dayjs(task.deadline)); 
-
-  // const requestData = {
-  //   id: task.id,
-  //   title: title,
-  //   description: description,
-  //   completed: completed,
-  //   deadline: deadline.tz(dayjs.tz.guess()).format() 
-  // }
-
-  // function handleSubmit(e: FormEvent<HTMLFormElement>){
-  //   e.preventDefault();
-  //   mutation.mutate(requestData);
-  //   onEditEnd();
-  // }
-
-  // function handleCancelSubmit(){
-  //   onEditEnd();
-  // }  
-
-  // function handleChangeTitle(e: ChangeEvent<HTMLInputElement>) {
-  //   e.preventDefault();
-  //   setTitle(e.target.value);
-  // }
-
-  // function handleChangeDescription(e: ChangeEvent<HTMLInputElement>){
-  //   e.preventDefault();
-  //   setDescription(e.target.value);
-  // }
-
-  // function handleChangeCompleted(){
-  //   setCompleted(!completed);
-  // }
-
-  // function handleChangeDeadline(value: dayjs.Dayjs | null){
-  //   if(value)setDeadline(value);
-  // }
 
   return (
     <Box>
@@ -94,61 +45,7 @@ export const EditingTaskItem = ({task, onEditEnd}: {
         onSubmit={handleSubmit(onSubmit)}
       >
         <CardContent>
-          <Grid2 container direction={"column"} spacing={2}>
-            <Grid2>
-              <Controller
-                name="title"
-                control={control}
-                rules={{required: true}}
-                render={({field}) => (
-                  <TextField
-                    {...field}
-                    autoFocus
-                    label="タスク名"
-                    fullWidth
-                    multiline
-                    type="text"
-                    variant="standard"
-                  />
-                )}
-              />
-            </Grid2>
-            <Grid2>
-              <Controller
-                name="description"
-                control={control}
-                render={({field}) => (
-                  <TextField
-                    {...field}
-                    type="text"
-                    label="説明"
-                    fullWidth
-                    multiline
-                    variant="standard"
-                  />
-                )}
-              />
-            </Grid2>
-            <Grid2>
-              <Controller
-                name="deadline"
-                control={control}
-                rules={{required: true}}
-                render={({field}) => (
-                  <DateTimePicker 
-                    {...field}
-                    format="YYYY年MM月DD日HH時mm分" 
-                    slotProps={{
-                      calendarHeader: {format: "YYYY年M月"}, 
-                      textField: {required: true}
-                    }}
-                    ampm={false}
-                    label={"期限"}
-                  />
-                )}
-              />
-            </Grid2>
-          </Grid2>
+          <FormControllers control={control} errors={errors}/>
         </CardContent>
         <CardActions sx={{justifyContent: "space-between"}}>
           <Controller

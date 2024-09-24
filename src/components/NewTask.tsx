@@ -1,27 +1,22 @@
 import dayjs from "dayjs";
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Fab, Grid2, TextField} from "@mui/material"
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Fab} from "@mui/material"
 import AddIcon from "@mui/icons-material/Add"
-import { MobileDateTimePicker } from "@mui/x-date-pickers"
 import { useCreateTask } from "../hooks/useCreateTask";
 import { useState } from "react";
-import { Controller, SubmitHandler, useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { FormControllers } from "./FormControllers";
+import { FormType } from "../types/FormType";
 
 export const NewTask = () => {
   const [open, setOpen] = useState(false);
   const mutation = useCreateTask();
-  const {handleSubmit, control, reset} = useForm({
+  const {handleSubmit, reset, control, formState: {errors}} = useForm<FormType>({
     defaultValues: {
       title: "",
       description: "",
       deadline: dayjs().add(1, "day").startOf("day")
     }
   });
-
-  type FormType = {
-    title: string;
-    description: string;
-    deadline: dayjs.Dayjs
-  };
 
   const onSubmit: SubmitHandler<FormType> = (data, event) => {
     const requestData = {
@@ -37,11 +32,13 @@ export const NewTask = () => {
 
   return (
     <Box>
-      <Box sx={{position:"fixed", bottom:16, left:16}}>
-        <Fab aria-label="add" color="primary" onClick={() => setOpen(true)}>
-          <AddIcon />
-        </Fab>
-      </Box>
+      <Fab 
+        color="primary" 
+        onClick={() => setOpen(true)}
+        sx={{position:"fixed", bottom:16, left:16}}
+      >
+        <AddIcon />
+      </Fab>
       <Dialog
         open={open}
         onClose={() => setOpen(false)}
@@ -55,61 +52,7 @@ export const NewTask = () => {
           <DialogContentText>
             新規タスクを追加するために、以下のフォームを埋めて「追加する」ボタンを押してください(「説明」は任意入力)。
           </DialogContentText>
-          <Grid2 container direction={"column"} spacing={2}>
-            <Grid2>
-              <Controller
-                name="title"
-                control={control}
-                rules={{required: true}}
-                render={({field}) => (
-                  <TextField
-                    {...field}
-                    autoFocus
-                    label="新規タスク名"
-                    type="text"
-                    fullWidth
-                    multiline
-                    variant="standard"
-                  />
-                )}
-              />
-            </Grid2>
-            <Grid2>
-              <Controller
-                name="description"
-                control={control}
-                render={({field}) => (
-                  <TextField
-                    {...field}
-                    label="説明"
-                    type="text"
-                    fullWidth
-                    multiline
-                    variant="standard"
-                  />
-                )}
-              />
-            </Grid2>
-            <Grid2>
-              <Controller
-                name="deadline"
-                control={control}
-                rules={{required: true}}
-                render={({field}) => (
-                  <MobileDateTimePicker 
-                    {...field}
-                    format="YYYY年M月D日 H時m分" 
-                    slotProps={{
-                      calendarHeader: {format: "YYYY年M月"}, 
-                    }}
-                    ampm={false}
-                    minutesStep={5}
-                    label={"期限"}
-                  />
-                )}
-              />
-            </Grid2>
-          </Grid2>
+          <FormControllers control={control} errors={errors}/>
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpen(false)}>キャンセル</Button>
