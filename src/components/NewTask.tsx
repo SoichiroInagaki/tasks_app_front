@@ -5,20 +5,23 @@ import { useCreateTask } from "../hooks/useCreateTask";
 import { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { FormControllers } from "./FormControllers";
-import { FormType } from "../types/FormType";
+import { TaskFormType } from "../types/TaskFormType";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { taskSchema } from "../validation/TaskValidation";
 
 export const NewTask = () => {
   const [open, setOpen] = useState(false);
   const mutation = useCreateTask();
-  const {handleSubmit, reset, control, formState: {errors}} = useForm<FormType>({
+  const {handleSubmit, reset, control, formState: {errors}} = useForm<TaskFormType>({
     defaultValues: {
       title: "",
       description: "",
       deadline: dayjs().add(1, "day").startOf("day")
-    }
+    },
+    resolver: zodResolver(taskSchema)
   });
 
-  const onSubmit: SubmitHandler<FormType> = (data, event) => {
+  const onSubmit: SubmitHandler<TaskFormType> = (data, event) => {
     const requestData = {
       ...data,
       completed: false,

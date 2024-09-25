@@ -1,6 +1,6 @@
 import { Box, Stack, } from "@mui/material";
 import { TaskItem } from "./TaskItem";
-import { TaskType } from "../types/TaskType";
+import { TaskJsonType } from "../types/TaskJsonType";
 import { EditingTaskItem } from "./EditingTaskItem";
 import { useTasksList } from "../hooks/useTasksList";
 import { useState } from "react";
@@ -14,7 +14,7 @@ export const TasksList = () => {
 
   return (
     <Stack spacing={2} direction={"column"} alignItems={"center"}>
-      {info.data?.map((task: TaskType) => {
+      {info.data?.map((task: TaskJsonType) => {
         if(activeId === task.id){
           return (
             <EditingTaskItem

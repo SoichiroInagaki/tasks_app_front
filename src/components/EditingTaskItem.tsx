@@ -5,27 +5,30 @@ import { lightBlue } from "@mui/material/colors";
 import dayjs from "dayjs";
 import { useUpdateTask } from "../hooks/useUpdateTask";
 import { DeleteDialog } from "./DeleteDialog";
-import { TaskType } from "../types/TaskType";
+import { TaskJsonType } from "../types/TaskJsonType";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { FormControllers } from "./FormControllers";
-import { FormType } from "../types/FormType";
+import { TaskFormType } from "../types/TaskFormType";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { taskSchema } from "../validation/TaskValidation";
 
 export const EditingTaskItem = ({task, onEditEnd}: {
-  task: TaskType; 
+  task: TaskJsonType; 
   onEditEnd: () => void;
 }) => {
   const [open, setOpen] = useState(false);
   const mutation = useUpdateTask();
-  const {handleSubmit, control, formState: {errors}} = useForm<FormType>({
+  const {handleSubmit, control, formState: {errors}} = useForm<TaskFormType>({
     defaultValues: {
       title: task.title,
       description: task.description,
       completed: task.completed,
       deadline: dayjs(task.deadline)
-    }
+    },
+    resolver: zodResolver(taskSchema)
   });
 
-  const onSubmit: SubmitHandler<FormType> = (data, event) => {
+  const onSubmit: SubmitHandler<TaskFormType> = (data, event) => {
     const requestData = {
       ...data,
       id: task.id,

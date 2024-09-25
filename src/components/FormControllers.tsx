@@ -1,12 +1,11 @@
 import { Stack, TextField } from "@mui/material"
 import { MobileDateTimePicker } from "@mui/x-date-pickers";
 import { Control, Controller, FieldErrors } from "react-hook-form"
-import { FormType } from "../types/FormType";
-
+import { TaskFormType } from "../types/TaskFormType";
 
 export const FormControllers = ({control, errors}: {
-  control: Control<FormType>,
-  errors: FieldErrors<FormType>
+  control: Control<TaskFormType>,
+  errors: FieldErrors<TaskFormType>
 }) => {
 
   return (
@@ -14,7 +13,6 @@ export const FormControllers = ({control, errors}: {
       <Controller
         name="title"
         control={control}
-        rules={{required: "入力が必須です"}}
         render={({field}) => (
           <TextField
             {...field}
@@ -40,13 +38,14 @@ export const FormControllers = ({control, errors}: {
             fullWidth
             multiline
             variant="standard"
+            error={!!errors.description}
+            helperText={errors.description?.message}
           />
         )}
       />
       <Controller
         name="deadline"
         control={control}
-        rules={{required: "入力が必須です"}}
         render={({field}) => (
           <MobileDateTimePicker 
             {...field}
