@@ -16,6 +16,6 @@ export const taskSchema = z.object({
   deadline: 
     z.custom<dayjs.Dayjs>(
       (val: dayjs.Dayjs) => val.isAfter(dayjs()), 
-      "期限には未来の日時を入力してください"
+      "過去の日時を設定しています"
     )
 });
