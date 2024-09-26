@@ -28,7 +28,7 @@ export const EditingTaskItem = ({task, onEditEnd}: {
     resolver: zodResolver(taskSchema)
   });
 
-  const onSubmit: SubmitHandler<TaskFormType> = (data, event) => {
+  const submitTaskData: SubmitHandler<TaskFormType> = (data, event) => {
     const requestData = {
       ...data,
       id: task.id,
@@ -45,7 +45,7 @@ export const EditingTaskItem = ({task, onEditEnd}: {
       <Card 
         sx={{ textAlign: "center", width: 500, border: 2, borderColor: lightBlue["400"]}}
         component={"form"}
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(submitTaskData)}
       >
         <CardContent>
           <FormControllers control={control} errors={errors}/>

@@ -21,7 +21,7 @@ export const NewTask = () => {
     resolver: zodResolver(taskSchema)
   });
 
-  const onSubmit: SubmitHandler<TaskFormType> = (data, event) => {
+  const submitTaskData: SubmitHandler<TaskFormType> = (data, event) => {
     const requestData = {
       ...data,
       completed: false,
@@ -47,7 +47,7 @@ export const NewTask = () => {
         onClose={() => setOpen(false)}
         PaperProps={{
           component: "form",
-          onSubmit: handleSubmit(onSubmit)
+          onSubmit: handleSubmit(submitTaskData)
         }}
       >
         <DialogTitle>新規タスクを追加する</DialogTitle>
