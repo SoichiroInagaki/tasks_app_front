@@ -1,4 +1,4 @@
-export type TaskType = {
+export type TaskJsonType = {
   id: number;
   title: string;
   description: string;

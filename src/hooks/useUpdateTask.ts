@@ -1,12 +1,12 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { requestUrl, tasksListQueryKey } from "../config/requestConfig";
-import { TaskType } from "../types/TaskType";
+import { TaskJsonType } from "../types/TaskJsonType";
 
 export function useUpdateTask () {
   const queryClient = useQueryClient();
   const mutation = useMutation({
-    mutationFn: async (task: TaskType) => {
+    mutationFn: async (task: TaskJsonType) => {
         const {id, ...editedTask} = task;
         const putRequestUrl = `${requestUrl}/${id}`; 
         try {
